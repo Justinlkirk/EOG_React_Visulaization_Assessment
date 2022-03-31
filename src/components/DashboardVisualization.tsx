@@ -8,7 +8,7 @@ import CardContent from '@material-ui/core/CardContent';
 import { makeStyles } from '@material-ui/core/styles';
 import CardHeader from './CardHeader';
 // import Avatar from './Avatar';
-import Metrics from '../Features/GraphFunctionality/Metrics';
+import Metrics from '../Features/Metrics/MetricsDisplay';
 
 const useStyles = makeStyles({
   card: {

@@ -13,10 +13,23 @@ import Wrapper from './components/Wrapper';
 import NowWhat from './components/NowWhat';
 import DashboardVisualization from './components/DashboardVisualization';
 
+// const client = new SubscriptionClient('https://react-assessment.herokuapp.com/graphql', { reconnect: true });
+
 const client = new ApolloClient({
   uri: 'https://react-assessment.herokuapp.com/graphql',
   cache: new InMemoryCache(),
 });
+
+// const networkInterface = createNetworkInterface({
+//   uri: 'https://react-assessment.herokuapp.com/graphql',
+//   cache: new InMemoryCache(),
+// });
+// const sub = new SubscriptionClient('ws://localhost:3000/', { reconnect: true });
+// const networkInterfaceWithSub = addGraphQLSubscriptions(networkInterface, sub);
+// const client = new ApolloClient({
+//   networkInterface,
+//   sub,
+// })
 
 const theme = createTheme({
   palette: {

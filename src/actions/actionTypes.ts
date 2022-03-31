@@ -1,0 +1,2 @@
+export const ADD_METRICS = 'ADD_METRICS';
+export const TOGGLE_TRACKING = 'TOGGLE_TRACKING';

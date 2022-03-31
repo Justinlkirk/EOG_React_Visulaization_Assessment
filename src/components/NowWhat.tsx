@@ -19,7 +19,7 @@ export default () => {
   const classes = useStyles();
   return (
     <Card className={classes.card}>
-      <CardHeader title="OK, Justin, you're all setup. Now What?" />
+      <CardHeader title="OK, Justin, you're all setup. Now what?" />
       <CardContent>
         <List>
           <ListItem>

@@ -1,7 +1,10 @@
 import * as types from '../actions/actionTypes';
 
 type StateType = {
-  [key: string]: { tracking: boolean },
+  [key: string]: {
+    tracking: boolean,
+    latestMeasurement: string,
+  },
 };
 
 const initialState: StateType = {};
@@ -13,12 +16,25 @@ export default (state = initialState, action: any) => {
   switch (action.type) {
     case types.ADD_METRICS:
       action.payload.forEach((metric: string) => {
-        if (!(metric in copyState)) copyState[metric] = { tracking: false };
+        if (!(metric in copyState)) {
+          copyState[metric] = {
+            tracking: false,
+            latestMeasurement: 'Reconnecting',
+          };
+        }
       });
       return copyState;
     case types.TOGGLE_TRACKING:
       copyState[action.payload].tracking = !copyState[action.payload].tracking;
       return copyState;
+    case 'test': {
+      const { metric, value, unit } = action.payload;
+      // eslint-disable-next-line no-console
+      console.log(metric, value, unit);
+      return {
+        ...state,
+      };
+    }
     default:
       return state;
   }

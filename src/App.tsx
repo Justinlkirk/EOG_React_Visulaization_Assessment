@@ -10,7 +10,7 @@ import {
 } from '@apollo/client';
 import Header from './components/Header';
 import Wrapper from './components/Wrapper';
-import NowWhat from './components/NowWhat';
+// import NowWhat from './components/NowWhat';
 import DashboardVisualization from './components/DashboardVisualization';
 
 // const client = new SubscriptionClient('https://react-assessment.herokuapp.com/graphql', { reconnect: true });
@@ -51,7 +51,6 @@ const App = () => (
     <Wrapper>
       <ApolloProvider client={client}>
         <Header />
-        <NowWhat />
         <DashboardVisualization />
         <ToastContainer />
       </ApolloProvider>

@@ -27,14 +27,6 @@ export default (state = initialState, action: any) => {
     case types.TOGGLE_TRACKING:
       copyState[action.payload].tracking = !copyState[action.payload].tracking;
       return copyState;
-    case 'test': {
-      const { metric, value, unit } = action.payload;
-      // eslint-disable-next-line no-console
-      console.log(metric, value, unit);
-      return {
-        ...state,
-      };
-    }
     default:
       return state;
   }

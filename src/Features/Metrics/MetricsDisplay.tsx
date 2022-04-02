@@ -10,6 +10,7 @@ import {
 // import Chip from '../../components/Chip';
 import { RootState } from '../../store';
 import MetricButton from './MetricButton';
+import MetricsGraph from './MetricsGraph';
 // import * as metricsActions from '../../actions/metricsActions';
 
 // const getMetricsQuery = gql`
@@ -21,12 +22,14 @@ import MetricButton from './MetricButton';
 //   }
 // }
 // `;
+
 const getHeartBeat = () => {
   const getHeartBeatQuery = gql`
-    query {
-      heartBeat
-    }
+  query {
+    heartBeat
+  }
   `;
+
   const { error, data } = useQuery<{ heartBeat: number }>(getHeartBeatQuery, { fetchPolicy: 'no-cache' });
   // fetchPolicy: 'no-cache' is not working.
   // From what I've read it needs to be included server side as well.
@@ -35,45 +38,40 @@ const getHeartBeat = () => {
   return data.heartBeat;
 };
 
-const queryTrackedMetrics = (currTime: number, metArr: any) => {
-  const dynamicQuery = metArr.reduce((acc: string, curr: any) => {
+type EntriesArrayType = [
+  string,
+  { tracking: boolean, latestMeasurement: string },
+];
+
+const queryTrackedMetrics = (currTime: number, metArr: EntriesArrayType[]) => {
+  const howFarBackToLook = currTime - 10000;
+  const buildMetricsString = metArr.reduce((acc: string, curr: EntriesArrayType) => {
     if (curr[1].tracking) {
       acc += `
-        ${curr[0]}: getMultipleMeasurements(input: { metricName: "${curr[0]}", after: ${currTime - 10000} }) {
-          metric
+        ${curr[0]}: getMultipleMeasurements(input: { metricName: "${curr[0]}", after: ${howFarBackToLook}, before: ${currTime} }) {
           measurements { at, value, unit }
         }
     `;
     }
     return acc;
   }, '');
-  /*
-    I went back and forth on whether I should dynamically build this quite a bit. I built it
-    out 3 or 4 times with different approaches, and I finally landed on doing it fully dynamic
-    considering there is no direct user input to the query (they can toggle the true or false,
-    but they can't actually inject any text into the query). If you read this I'd be interested
-    to know what your opinion is?
-  */
-  type GetMultipleMeasurementsQueryResponse = {
-    getMultipleMeasurements: {
-      metric: string;
-      at: number;
-      value: number;
-      unit: string;
-    }[]
-  };
-  const { error, data } = useQuery<GetMultipleMeasurementsQueryResponse>(gql`${dynamicQuery ? `query { ${dynamicQuery} }` : 'query { heartBeat }'}`);
-  if (error) return [];
-  if (!data) return [];
-  // eslint-disable-next-line no-console
-  console.log(data);
-  return data.getMultipleMeasurements;
-};
 
-type EntriesArrayType = [
-  string,
-  { tracking: boolean, latestMeasurement: string },
-];
+  type GetMultipleMeasurementsQueryResponse = {
+    [key: string]: [
+      measurements: {
+        __typename: 'Measurement';
+        at: number;
+        value: number;
+        unit: string;
+      },
+    ]
+  };
+  const query = buildMetricsString ? `query { ${buildMetricsString} }` : 'query { heartBeat }';
+  const { error, data } = useQuery<GetMultipleMeasurementsQueryResponse>(gql`${query}`);
+  if (error) return {};
+  if (!data || data.heartBeat) return {};
+  return data;
+};
 
 export default () => {
   const allMetrics = useSelector((state: RootState) => state);
@@ -83,13 +81,16 @@ export default () => {
     return <MetricButton key={met} metric={met} />;
   });
   const currentTime: number = getHeartBeat();
-  queryTrackedMetrics(currentTime, metricsArr);
+  const graphInfo = queryTrackedMetrics(currentTime, metricsArr);
+  const informationInGraphInfo = Object.keys(graphInfo).length;
+  const graph = informationInGraphInfo ? <MetricsGraph stats={graphInfo} /> : <></>;
   // const dispatch = useDispatch();
   // const { loading, error, data } = useSubscription<{ getMetrics: string[] }>(getMetricsQuery);
   // dispatch({ type: 'test', payload: { metric: 'blue', value: 2, unit: 'hyperParsecs' } });
   return (
     <div>
       {metrics}
+      {graph}
     </div>
   );
 };

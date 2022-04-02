@@ -9,6 +9,9 @@ import {
   Legend,
   Tooltip,
   Crosshair,
+  DateTime,
+  AxesDirective,
+  AxisDirective,
 } from '@syncfusion/ej2-react-charts';
 // import { useDispatch, useSelector } from 'react-redux';
 // import { RootState } from '../../store';
@@ -28,36 +31,62 @@ type StatsType = {
 
 export default (props: { stats: StatsType }) => {
   const { stats } = props;
-  // eslint-disable-next-line no-console
-  const series = Object.entries(stats).reduce((acc: any, curr: any) => {
+  const statsEntries = Object.entries(stats);
+  const axesAndSeriesObj = statsEntries.reduce((acc: any, curr: any) => {
     const metricName = curr[0];
     const metricUnit = curr[1][0].measurements[0].unit;
     const { measurements } = curr[1][0];
-    // eslint-disable-next-line no-console
-    console.log(metricName, metricUnit, measurements);
-    acc.push(<SeriesDirective
+    acc.series.push(<SeriesDirective
       key={metricName}
       name={metricName}
       type="Line"
       dataSource={measurements}
       xName="at"
       yName="value"
-    // yAxisName={metricName}
+      yAxisName={metricUnit}
     />);
+    if (metricUnit in acc.units) return acc;
+    // eslint and prettier disagree about the indentation. Prettier is correct.
+    // eslint-disable-next-line react/jsx-indent
+    acc.axes.push(<AxisDirective
+      key={metricUnit}
+      name={metricUnit}
+      title={metricUnit}
+      labelFormat={`{value} ${metricUnit}`}
+      opposedPosition={acc.imbalanced}
+    />);
+    acc.units[metricUnit] = true;
+    acc.imbalanced = !acc.imbalanced;
     return acc;
-  }, []);
+  }, {
+    axes: [],
+    series: [],
+    units: {},
+    imbalanced: false,
+  });
 
   return (
     <ChartComponent
       title="Data Visualization"
-      primaryXAxis={{ valueType: 'Category', title: 'time' }}
+      primaryXAxis={{ valueType: 'DateTime', title: 'time' }}
       legendSettings={{ visible: true }}
       tooltip={{ enable: true, shared: true }}
       crosshair={{ enable: true }}
     >
-      <Inject services={[LineSeries, Category, Legend, Tooltip, Crosshair]} />
+      <Inject services={[
+        LineSeries,
+        Category,
+        Legend,
+        Tooltip,
+        Crosshair,
+        DateTime,
+      ]}
+      />
+      <AxesDirective>
+        {axesAndSeriesObj.axes}
+      </AxesDirective>
       <SeriesCollectionDirective>
-        {series}
+        {axesAndSeriesObj.series}
       </SeriesCollectionDirective>
     </ChartComponent>
   );

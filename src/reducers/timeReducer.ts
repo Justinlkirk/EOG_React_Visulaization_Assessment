@@ -1,20 +1,18 @@
 import * as types from '../actions/actionTypes';
 
-type StateType = {
-  [key: string]: {
-    tracking: boolean;
-    latestMeasurement: string;
-  },
-};
+// type StateType = {
+//   metrics: {
+//     [key: string]: {
+//       tracking: boolean;
+//       latestMeasurement: string;
+//     },
+//   }
+//   timeFrame: number;
+// };
 
-type ActionType = {
-  type: string,
-  payload: any,
-};
+const initialState: any = {};
 
-const initialState: StateType = {};
-
-export default (state = initialState, action: ActionType) => {
+export default (state = initialState, action: any) => {
   // eslint-disable-next-line no-case-declarations
   const copyState = JSON.parse(JSON.stringify(state));
   // 2 * O(n) instead of O(n) with a recursive algo.

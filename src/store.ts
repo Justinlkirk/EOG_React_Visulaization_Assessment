@@ -1,8 +1,8 @@
 import { createStore } from 'redux';
-import metricsReducer from './reducers/metricsReducer';
+import combinedReducers from './reducers/reducerCombiner';
 
 export const store = createStore(
-  metricsReducer,
+  combinedReducers,
 );
 
 export type RootState = ReturnType<typeof store.getState>;

@@ -44,7 +44,7 @@ type EntriesArrayType = [
 ];
 
 const queryTrackedMetrics = (currTime: number, metArr: EntriesArrayType[]) => {
-  const howFarBackToLook = currTime - 10000;
+  const howFarBackToLook = currTime - 1000000;
   const buildMetricsString = metArr.reduce((acc: string, curr: EntriesArrayType) => {
     if (curr[1].tracking) {
       acc += `
@@ -74,7 +74,7 @@ const queryTrackedMetrics = (currTime: number, metArr: EntriesArrayType[]) => {
 };
 
 export default () => {
-  const allMetrics = useSelector((state: RootState) => state);
+  const allMetrics = useSelector((state: RootState) => state.metrics);
   const metricsArr: EntriesArrayType[] = Object.entries(allMetrics);
   const metrics: JSX.Element[] = metricsArr.map((entry: EntriesArrayType) => {
     const met = entry[0];

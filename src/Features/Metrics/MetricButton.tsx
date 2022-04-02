@@ -15,10 +15,10 @@ export default (props: { metric: string }) => {
   const text = tracking ? `${metric}: ${latestMeas}` : metric;
 
   return (
-    <div key={metric}>
+    <span key={metric}>
       <button type='button' onClick={handleClick}>
         {text}
       </button>
-    </div>
+    </span>
   );
 };

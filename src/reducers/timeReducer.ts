@@ -1,34 +1,29 @@
 import * as types from '../actions/actionTypes';
 
-// type StateType = {
-//   metrics: {
-//     [key: string]: {
-//       tracking: boolean;
-//       latestMeasurement: string;
-//     },
-//   }
-//   timeFrame: number;
-// };
+type StateType = {
+  timeFrame: number;
+};
 
-const initialState: any = {};
+type ActionType = {
+  type: string,
+  payload: number,
+};
 
-export default (state = initialState, action: any) => {
+const initialState: StateType = {
+  timeFrame: 10000,
+};
+// 10000 is an arbitrary default that corresponds to the default
+// value of the drop down in ./src/components/TimeFrameDropdown
+
+export default (state = initialState, action: ActionType) => {
   // eslint-disable-next-line no-case-declarations
   const copyState = JSON.parse(JSON.stringify(state));
   // 2 * O(n) instead of O(n) with a recursive algo.
   switch (action.type) {
-    case types.ADD_METRICS:
-      action.payload.forEach((metric: string) => {
-        if (!(metric in copyState)) {
-          copyState[metric] = {
-            tracking: false,
-            latestMeasurement: 'Reconnecting',
-          };
-        }
-      });
-      return copyState;
-    case types.TOGGLE_TRACKING:
-      copyState[action.payload].tracking = !copyState[action.payload].tracking;
+    case types.SET_TIME_FRAME:
+      // eslint-disable-next-line no-console
+      console.log('here');
+      copyState.timeFrame = action.payload;
       return copyState;
     default:
       return state;

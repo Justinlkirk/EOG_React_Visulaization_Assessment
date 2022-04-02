@@ -11,6 +11,7 @@ import {
 import { RootState } from '../../store';
 import MetricButton from './MetricButton';
 import MetricsGraph from './MetricsGraph';
+import TimeFrameDropdown from '../../components/TimeFrameDropdown';
 // import * as metricsActions from '../../actions/metricsActions';
 
 // const getMetricsQuery = gql`
@@ -43,8 +44,8 @@ type EntriesArrayType = [
   { tracking: boolean, latestMeasurement: string },
 ];
 
-const queryTrackedMetrics = (currTime: number, metArr: EntriesArrayType[]) => {
-  const howFarBackToLook = currTime - 1000000;
+const queryTrackedMetrics = (currTime: number, metArr: EntriesArrayType[], timeFrame: number) => {
+  const howFarBackToLook = currTime - timeFrame;
   const buildMetricsString = metArr.reduce((acc: string, curr: EntriesArrayType) => {
     if (curr[1].tracking) {
       acc += `
@@ -75,21 +76,22 @@ const queryTrackedMetrics = (currTime: number, metArr: EntriesArrayType[]) => {
 
 export default () => {
   const allMetrics = useSelector((state: RootState) => state.metrics);
+  const timeFrame = useSelector((state: RootState) => state.time.timeFrame);
   const metricsArr: EntriesArrayType[] = Object.entries(allMetrics);
   const metrics: JSX.Element[] = metricsArr.map((entry: EntriesArrayType) => {
     const met = entry[0];
     return <MetricButton key={met} metric={met} />;
   });
   const currentTime: number = getHeartBeat();
-  const graphInfo = queryTrackedMetrics(currentTime, metricsArr);
+  const graphInfo = queryTrackedMetrics(currentTime, metricsArr, timeFrame);
   const informationInGraphInfo = Object.keys(graphInfo).length;
   const graph = informationInGraphInfo ? <MetricsGraph stats={graphInfo} /> : <></>;
-  // const dispatch = useDispatch();
-  // const { loading, error, data } = useSubscription<{ getMetrics: string[] }>(getMetricsQuery);
-  // dispatch({ type: 'test', payload: { metric: 'blue', value: 2, unit: 'hyperParsecs' } });
   return (
     <div>
-      {metrics}
+      <div>
+        {metrics}
+      </div>
+      <TimeFrameDropdown />
       {graph}
     </div>
   );

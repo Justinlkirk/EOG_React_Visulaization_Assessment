@@ -7,6 +7,7 @@ import { useGeolocation } from 'react-use';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import { Typography } from '@material-ui/core';
 import Chip from '../../components/Chip';
+import * as defaults from '../../constants/defaultValues';
 
 const toF = (c: number) => (c * 9) / 5 + 32;
 
@@ -33,8 +34,8 @@ export default () => {
   const getLocation = useGeolocation();
   // Default to houston
   const latLong = {
-    latitude: getLocation.latitude || 29.7604,
-    longitude: getLocation.longitude || -95.3698,
+    latitude: getLocation.latitude || defaults.HOUSTON_LATITUDE,
+    longitude: getLocation.longitude || defaults.HOUSTON_LONGITUDE,
   };
   const { loading, error, data } = useQuery<WeatherDataResponse>(query, {
     variables: {

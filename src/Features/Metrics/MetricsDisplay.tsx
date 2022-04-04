@@ -1,34 +1,22 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 import {
-  // useSubscription,
   gql,
   useQuery,
 } from '@apollo/client';
-// import LinearProgress from '@material-ui/core/LinearProgress';
-// import { Typography } from '@material-ui/core';
-// import Chip from '../../components/Chip';
+import LinearProgress from '@material-ui/core/LinearProgress';
+import { Typography } from '@material-ui/core';
+import Grid from '@mui/material/Grid';
 import { RootState } from '../../store';
 import MetricButton from './MetricButton';
 import MetricsGraph from './MetricsGraph';
 import TimeFrameDropdown from '../../components/TimeFrameDropdown';
-// import * as metricsActions from '../../actions/metricsActions';
-
-// const getMetricsQuery = gql`
-// {
-//   newMeasurement {
-//     metric
-//     value
-//     unit
-//   }
-// }
-// `;
 
 const getHeartBeat = () => {
   const getHeartBeatQuery = gql`
-  query {
-    heartBeat
-  }
+    query {
+      heartBeat
+    }
   `;
 
   const { error, data } = useQuery<{ heartBeat: number }>(getHeartBeatQuery, { fetchPolicy: 'no-cache' });
@@ -58,20 +46,22 @@ const queryTrackedMetrics = (currTime: number, metArr: EntriesArrayType[], timeF
   }, '');
 
   type GetMultipleMeasurementsQueryResponse = {
-    [key: string]: [
+    [key: string]: [{
+      __typename: string;
       measurements: {
-        __typename: 'Measurement';
+        __typename: string;
         at: number;
         value: number;
         unit: string;
-      },
-    ]
+      }[],
+    }]
   };
   const query = buildMetricsString ? `query { ${buildMetricsString} }` : 'query { heartBeat }';
-  const { error, data } = useQuery<GetMultipleMeasurementsQueryResponse>(gql`${query}`);
-  if (error) return {};
-  if (!data || data.heartBeat) return {};
-  return data;
+  const { loading, error, data } = useQuery<GetMultipleMeasurementsQueryResponse>(gql`${query}`);
+  if (loading) return <LinearProgress />;
+  if (error) return <Typography color="error">{error}</Typography>;
+  if (!data || data.heartBeat) return <></>;
+  return <MetricsGraph stats={data} />;
 };
 
 export default () => {
@@ -83,14 +73,18 @@ export default () => {
     return <MetricButton key={met} metric={met} />;
   });
   const currentTime: number = getHeartBeat();
-  const graphInfo = queryTrackedMetrics(currentTime, metricsArr, timeFrame);
-  const informationInGraphInfo = Object.keys(graphInfo).length;
-  const graph = informationInGraphInfo ? <MetricsGraph stats={graphInfo} /> : <></>;
+  const graph = queryTrackedMetrics(currentTime, metricsArr, timeFrame);
   return (
     <div>
-      <div>
+      <Grid
+        container
+        direction="row"
+        alignContent="center"
+        alignItems="center"
+        rowSpacing={2}
+      >
         {metrics}
-      </div>
+      </Grid>
       <TimeFrameDropdown />
       {graph}
     </div>

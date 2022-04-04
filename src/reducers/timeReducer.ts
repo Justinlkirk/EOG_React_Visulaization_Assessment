@@ -3,8 +3,6 @@ import * as defaults from '../constants/defaultValues';
 
 type StateType = {
   timeFrame: number;
-  currentTime: number;
-  initialTime: number;
 };
 
 type ActionType = {
@@ -14,8 +12,6 @@ type ActionType = {
 
 const initialState: StateType = {
   timeFrame: defaults.DEFAULT_TIME_FRAME,
-  currentTime: Infinity,
-  initialTime: Infinity,
 };
 
 export default (state = initialState, action: ActionType) => {

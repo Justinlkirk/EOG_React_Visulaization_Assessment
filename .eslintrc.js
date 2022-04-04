@@ -8,6 +8,9 @@ module.exports = {
   },
   parser: '@typescript-eslint/parser', // Specifies the ESLint parser
   extends: ['airbnb-typescript'],
+  overrides: [
+    { files: ['*.ts', '*.tsx', '*.test.ts'] }
+  ],
   globals: {
     Atomics: 'readonly',
     SharedArrayBuffer: 'readonly',
